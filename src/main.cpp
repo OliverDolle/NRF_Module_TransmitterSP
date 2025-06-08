@@ -1,18 +1,43 @@
 #include <Arduino.h>
 
-// put function declarations here:
-int myFunction(int, int);
+#include <SPI.h>
+#include <nRF24L01.h>
+#include <RF24.h>
+
+#define CE_PIN 4
+#define CSN_PIN 5
+
+RF24 radio(CE_PIN, CSN_PIN);
+const byte address[6] = "NODE1";
+
+const char text[] = "Ping";
+const int delayMs = 10;  // delay between channel hops
 
 void setup() {
-  // put your setup code here, to run once:
-  int result = myFunction(2, 3);
+  Serial.begin(115200);
+  while (!Serial);
+
+  if (!radio.begin()) {
+    Serial.println("NRF24L01 fejl!");
+    while (1);
+  }
+
+  radio.setPALevel(RF24_PA_MAX);   // Maximum power
+  radio.setDataRate(RF24_2MBPS);   // Highest data rate
+  radio.setAutoAck(false);         // Disable auto acknowledgement
+  radio.setRetries(0, 0);          // No retries
+  radio.openWritingPipe(address);  // Set address
+  radio.stopListening();           // Set as transmitter
+
+  Serial.println("Klar til at sende på flere kanaler");
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-}
-
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
+  for (int channel = 0; channel <= 125; channel++) {
+    radio.setChannel(channel);
+    bool success = radio.write(&text, sizeof(text));
+    
+    Serial.printf("Kanal %d: %s\n", channel, success ? "Sendt" : "Fejl");
+    delay(delayMs);
+  }
 }

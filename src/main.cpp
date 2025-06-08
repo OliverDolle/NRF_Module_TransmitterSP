@@ -18,7 +18,7 @@ void setup() {
   while (!Serial);
 
   if (!radio.begin()) {
-    Serial.println("NRF24L01 fejl!");
+    Serial.println("NRF24L01 error");
     while (1);
   }
 
@@ -29,7 +29,7 @@ void setup() {
   radio.openWritingPipe(address);  // Set address
   radio.stopListening();           // Set as transmitter
 
-  Serial.println("Klar til at sende på flere kanaler");
+  Serial.println("Ready for transmition on several chanels");
 }
 
 void loop() {
@@ -37,7 +37,7 @@ void loop() {
     radio.setChannel(channel);
     bool success = radio.write(&text, sizeof(text));
     
-    Serial.printf("Kanal %d: %s\n", channel, success ? "Sendt" : "Fejl");
+    Serial.printf("Chanel %d: %s\n", channel, success ? "Sent" : "error");
     delay(delayMs);
   }
 }

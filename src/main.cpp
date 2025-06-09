@@ -11,9 +11,10 @@ RF24 radio(CE_PIN, CSN_PIN);
 const byte address[6] = "NODE1";
 
 const char text[] = "Ping";
-const int delayMs = 10;  // delay between channel hops
+const int delayMs = 1;  // delay between channel hops
 
 void setup() {
+  /*
   Serial.begin(115200);
   while (!Serial);
 
@@ -21,6 +22,7 @@ void setup() {
     Serial.println("NRF24L01 error");
     while (1);
   }
+  */
 
   radio.setPALevel(RF24_PA_MAX);   // Maximum power
   radio.setDataRate(RF24_2MBPS);   // Highest data rate
@@ -29,15 +31,16 @@ void setup() {
   radio.openWritingPipe(address);  // Set address
   radio.stopListening();           // Set as transmitter
 
-  Serial.println("Ready for transmition on several chanels");
+  //Serial.println("Ready for transmition on several channels");
 }
 
 void loop() {
   for (int channel = 0; channel <= 125; channel++) {
     radio.setChannel(channel);
-    bool success = radio.write(&text, sizeof(text));
+    radio.write(&text, sizeof(text));
+    //bool success = radio.write(&text, sizeof(text));
     
-    Serial.printf("Chanel %d: %s\n", channel, success ? "Sent" : "error");
+    //Serial.printf("Channel %d: %s\n", channel, success ? "Sent" : "Error");
     delay(delayMs);
   }
 }
